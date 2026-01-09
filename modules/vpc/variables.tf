@@ -24,3 +24,7 @@ variable "public_subnet" {
 variable "azs" {
   type = list(string)
 }
+
+variable "private_subnet" {
+  type = list(string)
+}
