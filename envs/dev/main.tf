@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source         = "../../modules/vpc"
+  source         = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=main"
   env            = var.env
   cidr_block     = var.cidr_block
   tags           = var.tags
