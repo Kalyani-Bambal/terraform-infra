@@ -31,3 +31,23 @@ variable "private_subnets" {
   description = "Private Subnets"
   type        = list(string)
 }
+
+variable "cluster_name" {
+  type = string
+}
+
+variable "cluster_version" {
+  type = string
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC to deploy EKS into"
+  type        = string
+  default     = ""
+}
+
+variable "private_subnet_ids" {
+  description = "List of private subnet IDs for EKS cluster"
+  type        = list(string)
+  default     = []
+}
