@@ -21,3 +21,7 @@ output "cluster_endpoint" {
 output "cluster_ca" {
   value = module.eks.cluster_ca
 }
+
+output "public_subnet_ids" {
+  value = module.vpc.public_subnet_ids
+}

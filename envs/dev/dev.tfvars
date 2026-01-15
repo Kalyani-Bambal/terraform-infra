@@ -10,8 +10,16 @@ region          = "ap-south-1"
 
 cluster_name        = "shared-cluster"
 cluster_version     = "1.34"
-desired_size        = 3
-max_size            = 6
-min_size            = 2
+desired_size        = 2
+max_size            = 3
+min_size            = 1
 node_instance_types = ["t3.small"]
 allowed_cidr_blocks = ["10.10.0.0/16"]  # VPC CIDR (bastion included
+allowed_ssh_cidrs = ["0.0.0.0/0"]
+bastion_ami = "ami-02b8269d5e85954ef"
+bastion_instance_type = "t3.small"
+bastion_key_name = "bastion-key"
+common_tags = {
+  "Project"     = "TerraformInfra"
+  "Environment" = "Development"
+}
