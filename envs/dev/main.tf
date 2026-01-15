@@ -15,14 +15,18 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=main"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=dev1"
 
-  env                = var.env
-  cluster_name       = "${var.env}-eks"
-  cluster_version    = var.cluster_version
+  env             = var.env
+  cluster_name    = "${var.env}-eks"
+  cluster_version = var.cluster_version
 
-  vpc_id             = module.vpc.aws_vpc
-  private_subnet_ids = module.vpc.private_subnet_ids
+  vpc_id              = module.vpc.aws_vpc
+  private_subnet_ids  = module.vpc.private_subnet_ids
+  desired_size        = var.desired_size
+  max_size            = var.max_size
+  min_size            = var.min_size
+  node_instance_types = var.node_instance_types
 
   tags = var.tags
 }
