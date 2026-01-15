@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=main"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=dev2"
 
   env            = var.env
   cidr_block     = var.cidr_block
@@ -15,7 +15,7 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=dev1"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=dev2"
 
   env             = var.env
   cluster_name    = "${var.env}-eks"
@@ -27,6 +27,8 @@ module "eks" {
   max_size            = var.max_size
   min_size            = var.min_size
   node_instance_types = var.node_instance_types
+
+  allowed_cidr_blocks = var.allowed_cidr_blocks
 
   tags = var.tags
 }

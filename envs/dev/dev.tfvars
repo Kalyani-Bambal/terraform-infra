@@ -14,3 +14,4 @@ desired_size        = 3
 max_size            = 6
 min_size            = 2
 node_instance_types = ["t3.small"]
+allowed_cidr_blocks = ["10.10.0.0/16"]  # VPC CIDR (bastion included

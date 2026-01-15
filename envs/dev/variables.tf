@@ -70,3 +70,9 @@ variable "min_size" {
 variable "node_instance_types" {
   type = list(string)
 }
+
+variable "allowed_cidr_blocks" {
+  description = "CIDR blocks allowed to access EKS private endpoint"
+  type = list(string)
+  default = [  ]
+}
