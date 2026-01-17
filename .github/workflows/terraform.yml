@@ -1,11 +1,15 @@
-name: Terraform Deployment
+name: Terraform Multi-Env CI/CD
 
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - "envs/**"
 
   push:
     branches: [ main ]
+    paths:
+      - "envs/**"
 
   workflow_dispatch:
     inputs:
@@ -18,7 +22,7 @@ on:
           - stage
           - prod
       action:
-        description: "Terraform action"
+        description: "Terraform Action"
         required: true
         type: choice
         options:
@@ -34,77 +38,94 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        env: [dev, stage, prod]
+
     env:
       AWS_REGION: ap-south-1
       TF_VERSION: 1.6.6
-
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ---------------------------
-      # Decide environment
-      # ---------------------------
-      - name: Set Environment
-        id: env
+      # -----------------------------------------
+      # Detect if environment was changed
+      # -----------------------------------------
+      - name: Detect environment changes
+        id: changes
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "env=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "run=true" >> $GITHUB_OUTPUT
           else
-            echo "env=dev" >> $GITHUB_OUTPUT
+            git fetch origin main
+            if git diff --name-only origin/main...HEAD | grep -q "^envs/${{ matrix.env }}/"; then
+              echo "run=true" >> $GITHUB_OUTPUT
+            else
+              echo "run=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
+      - name: Skip if no changes
+        if: steps.changes.outputs.run == 'false'
+        run: echo "No changes for ${{ matrix.env }}, skipping"
+
       - name: Configure AWS Credentials (OIDC)
+        if: steps.changes.outputs.run == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
+        if: steps.changes.outputs.run == 'true'
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Terraform Init
-        working-directory: envs/${{ steps.env.outputs.env }}
+        if: steps.changes.outputs.run == 'true'
+        working-directory: envs/${{ matrix.env }}
         run: terraform init -input=false
 
       - name: Terraform Validate
-        working-directory: envs/${{ steps.env.outputs.env }}
+        if: steps.changes.outputs.run == 'true'
+        working-directory: envs/${{ matrix.env }}
         run: terraform validate
 
-      # --------------------------------
+      # -----------------------------------------
       # PR → PLAN
-      # --------------------------------
+      # -----------------------------------------
       - name: Terraform Plan (PR)
-        if: github.event_name == 'pull_request'
-        working-directory: envs/${{ steps.env.outputs.env }}
-        run: terraform plan -var-file=${{ steps.env.outputs.env }}.tfvars -no-color
+        if: github.event_name == 'pull_request' && steps.changes.outputs.run == 'true'
+        working-directory: envs/${{ matrix.env }}
+        run: terraform plan -var-file=${{ matrix.env }}.tfvars -no-color
 
-      # --------------------------------
+      # -----------------------------------------
       # Manual PLAN
-      # --------------------------------
+      # -----------------------------------------
       - name: Terraform Plan (Manual)
-        if: github.event_name == 'workflow_dispatch' && inputs.action == 'plan'
-        working-directory: envs/${{ steps.env.outputs.env }}
-        run: terraform plan -var-file=${{ steps.env.outputs.env }}.tfvars
+        if: github.event_name == 'workflow_dispatch' &&
+            inputs.action == 'plan' &&
+            inputs.environment == matrix.env
+        working-directory: envs/${{ matrix.env }}
+        run: terraform plan -var-file=${{ matrix.env }}.tfvars
 
-      # --------------------------------
+      # -----------------------------------------
       # Manual APPLY
-      # --------------------------------
+      # -----------------------------------------
       - name: Terraform Apply (Manual)
-        if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
-        working-directory: envs/${{ steps.env.outputs.env }}
-        run: terraform apply -var-file=${{ steps.env.outputs.env }}.tfvars -auto-approve
+        if: github.event_name == 'workflow_dispatch' &&
+            inputs.action == 'apply' &&
+            inputs.environment == matrix.env
+        working-directory: envs/${{ matrix.env }}
+        run: terraform apply -var-file=${{ matrix.env }}.tfvars -auto-approve
 
-      # --------------------------------
+      # -----------------------------------------
       # Merge to main → APPLY
-      # --------------------------------
+      # -----------------------------------------
       - name: Terraform Apply (Auto)
-        if: github.event_name == 'push'
-        working-directory: envs/${{ steps.env.outputs.env }}
-        run: terraform apply -var-file=${{ steps.env.outputs.env }}.tfvars -auto-approve
+        if: github.event_name == 'push' && steps.changes.outputs.run == 'true'
+        working-directory: envs/${{ matrix.env }}
+        run: terraform apply -var-file=${{ matrix.env }}.tfvars -auto-approve
