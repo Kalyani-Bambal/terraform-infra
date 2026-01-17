@@ -31,6 +31,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: envs/${{ inputs.environment }}
 
     steps:
       - name: Checkout terraform-infra
@@ -45,7 +46,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ap-south-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -60,8 +61,12 @@ jobs:
 
       - name: Terraform Plan
         if: inputs.action == 'plan'
-        run: terraform plan -var-file=envs/${{ inputs.environment}}.tfvars
+        run: terraform plan -input=false
+
+      - name: Terraform Plan (Apply Mode)
+        if: inputs.action == 'apply'
+        run: terraform plan -input=false -out=tfplan
 
       - name: Terraform Apply
         if: inputs.action == 'apply'
-        run: terraform apply -auto-approve -var-file=envs/${{ inputs.environment }}.tfvars
+        run: terraform apply -input=false tfplan
