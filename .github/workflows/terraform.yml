@@ -31,7 +31,6 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: envs/${{ inputs.environment }}
 
     steps:
       - name: Checkout terraform-infra
@@ -61,12 +60,8 @@ jobs:
 
       - name: Terraform Plan
         if: inputs.action == 'plan'
-        run: terraform plan -var-file=envs/dev.tfvars
-
-      - name: Terraform Plan (Apply Mode)
-        if: inputs.action == 'apply'
-        run: terraform plan -var-file=envs/dev.tfvars
+        run: terraform plan -var-file=envs/${{ inputs.environment }}.tfvars
 
       - name: Terraform Apply
         if: inputs.action == 'apply'
-        run: terraform apply -auto-approve -var-file=envs/dev.tfvars
+        run: terraform apply -auto-approve -var-file=envs/${{ inputs.environment }}.tfvars
