@@ -1,13 +1,16 @@
-name: Terraform Multi-Env Deployment
+name: Terraform Deployment
 
 on:
-  # ----------------------------
-  # Manual Trigger
-  # ----------------------------
+  pull_request:
+    branches: [ main ]
+
+  push:
+    branches: [ main ]
+
   workflow_dispatch:
     inputs:
       environment:
-        description: "Select environment"
+        description: "Environment"
         required: true
         type: choice
         options:
@@ -22,17 +25,6 @@ on:
           - plan
           - apply
 
-  # ----------------------------
-  # Auto Trigger
-  # ----------------------------
-  pull_request:
-    branches:
-      - main
-
-  push:
-    branches:
-      - main
-
 permissions:
   id-token: write
   contents: read
@@ -40,79 +32,79 @@ permissions:
 
 jobs:
   terraform:
-    name: Terraform Deployment
     runs-on: ubuntu-latest
 
-    # ----------------------------
-    # Environment selection logic
-    # ----------------------------
     env:
-      TF_ENV: ${{ inputs.environment || 'dev' }}
+      AWS_REGION: ap-south-1
+      TF_VERSION: 1.6.6
 
     defaults:
       run:
         shell: bash
-        working-directory: envs/${{ env.TF_ENV }}
 
     steps:
-      - name: Checkout terraform-infra
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Needed only if terraform-module repo is PRIVATE
-      - name: Configure Git for private module repo
-        if: secrets.MODULE_REPO_TOKEN != ''
+      # ---------------------------
+      # Decide environment
+      # ---------------------------
+      - name: Set Environment
+        id: env
         run: |
-          git config --global url."https://${{ secrets.MODULE_REPO_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "env=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            echo "env=dev" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Configure AWS credentials (OIDC)
+      - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ap-south-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ secrets.TF_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
 
       - name: Terraform Init
+        working-directory: envs/${{ steps.env.outputs.env }}
         run: terraform init -input=false
 
       - name: Terraform Validate
+        working-directory: envs/${{ steps.env.outputs.env }}
         run: terraform validate
 
-      # ------------------------------------
-      # PR → Terraform PLAN (Auto)
-      # ------------------------------------
+      # --------------------------------
+      # PR → PLAN
+      # --------------------------------
       - name: Terraform Plan (PR)
         if: github.event_name == 'pull_request'
-        run: terraform plan -var-file=${{ env.TF_ENV }}.tfvars -input=false -no-color
+        working-directory: envs/${{ steps.env.outputs.env }}
+        run: terraform plan -var-file=${{ steps.env.outputs.env }}.tfvars -no-color
 
-      # ------------------------------------
+      # --------------------------------
       # Manual PLAN
-      # ------------------------------------
+      # --------------------------------
       - name: Terraform Plan (Manual)
         if: github.event_name == 'workflow_dispatch' && inputs.action == 'plan'
-        run: terraform plan -var-file=${{ env.TF_ENV }}.tfvars -input=false
+        working-directory: envs/${{ steps.env.outputs.env }}
+        run: terraform plan -var-file=${{ steps.env.outputs.env }}.tfvars
 
-      # ------------------------------------
+      # --------------------------------
       # Manual APPLY
-      # ------------------------------------
-      - name: Terraform Plan (Apply - Manual)
-        if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
-        run: terraform plan -var-file=${{ env.TF_ENV }}.tfvars -input=false -out=tfplan
-
+      # --------------------------------
       - name: Terraform Apply (Manual)
         if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
-        run: terraform apply -input=false tfplan
+        working-directory: envs/${{ steps.env.outputs.env }}
+        run: terraform apply -var-file=${{ steps.env.outputs.env }}.tfvars -auto-approve
 
-      # ------------------------------------
-      # Merge to main → Terraform APPLY (Auto)
-      # ------------------------------------
-      - name: Terraform Plan (Auto Apply)
-        if: github.event_name == 'push'
-        run: terraform plan -var-file=${{ env.TF_ENV }}.tfvars -input=false -out=tfplan
-
+      # --------------------------------
+      # Merge to main → APPLY
+      # --------------------------------
       - name: Terraform Apply (Auto)
         if: github.event_name == 'push'
-        run: terraform apply -input=false tfplan
+        working-directory: envs/${{ steps.env.outputs.env }}
+        run: terraform apply -var-file=${{ steps.env.outputs.env }}.tfvars -auto-approve
