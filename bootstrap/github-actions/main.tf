@@ -20,7 +20,7 @@ resource "aws_iam_role" "github_actions" {
     Action = "sts:AssumeRoleWithWebIdentity"
     Condition = {
       StringLike = {
-        "token.actions.githubusercontent.com:sub" = "repo:Kalyani-Bambal/terraform-infra:*"
+        "token.actions.githubusercontent.com:sub" = "repo:Kalyani-Bambal/terraform-infra::refs/heads/main"
       }
     }
   }]
