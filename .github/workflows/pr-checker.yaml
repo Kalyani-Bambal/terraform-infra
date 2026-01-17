@@ -1,0 +1,53 @@
+name: PR Approval Required
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+  pull_request_review:
+    types:
+      - submitted
+      - dismissed
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  approval-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR approval status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request
+              ? context.payload.pull_request.number
+              : context.issue.number;
+
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            // Keep latest review per user (important)
+            const latestReviews = {};
+            for (const review of reviews) {
+              latestReviews[review.user.login] = review.state;
+            }
+
+            const approvals = Object.values(latestReviews).filter(
+              state => state === "APPROVED"
+            );
+
+            if (approvals.length === 0) {
+              core.setFailed("❌ PR is NOT approved. At least one approval is required.");
+            } else {
+              console.log("✔ PR approved by at least one reviewer.");
+            }
