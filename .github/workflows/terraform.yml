@@ -1,0 +1,72 @@
+name: Terraform Multi-Env Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - stage
+          - prod
+      action:
+        description: "Terraform action"
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform ${{ inputs.action }} (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: envs/${{ inputs.environment }}
+
+    steps:
+      - name: Checkout terraform-infra
+        uses: actions/checkout@v4
+
+      # Needed only if terraform-module repo is PRIVATE
+      - name: Configure Git for private module repo
+        run: |
+          git config --global url."https://${{ secrets.MODULE_REPO_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ secrets.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        if: inputs.action == 'plan'
+        run: terraform plan -input=false
+
+      - name: Terraform Plan (Apply Mode)
+        if: inputs.action == 'apply'
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform Apply
+        if: inputs.action == 'apply'
+        run: terraform apply -input=false tfplan
