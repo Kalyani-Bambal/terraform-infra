@@ -60,7 +60,7 @@ jobs:
 
       - name: Terraform Plan
         if: inputs.action == 'plan'
-        run: terraform plan -var-file=envs/${{ inputs.environment }}.tfvars
+        run: terraform plan -var-file=envs/${{ inputs.environment}}.tfvars
 
       - name: Terraform Apply
         if: inputs.action == 'apply'
