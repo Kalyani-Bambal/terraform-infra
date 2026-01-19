@@ -38,6 +38,7 @@ resource "aws_iam_role" "github_actions" {
         Principal = {
           AWS = [
             "arn:aws:iam::358871393576:user/Kalyani-Bambal",
+            "arn:aws:iam::358871393576:user/Ashutosh-Bambal",
             "arn:aws:iam::358871393576:role/github-actions-terraform-role-1"
           ]
         }
