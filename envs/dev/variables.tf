@@ -109,3 +109,4 @@ variable "bastion_instance_type" {
 variable "allowed_ssh_cidrs" {
   type = list(string)
 }
+
