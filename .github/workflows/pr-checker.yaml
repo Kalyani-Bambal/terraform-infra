@@ -33,10 +33,10 @@ jobs:
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: prNumber
+              pull_number: prNumber,
             });
 
-            // Keep latest review per user (important)
+            // Keep only latest review per reviewer
             const latestReviews = {};
             for (const review of reviews) {
               latestReviews[review.user.login] = review.state;
@@ -47,7 +47,9 @@ jobs:
             );
 
             if (approvals.length === 0) {
-              core.setFailed("❌ PR is NOT approved. At least one approval is required.");
+              core.setFailed(
+                "❌ PR is not approved. At least one approval is required before merge."
+              );
             } else {
-              console.log("✔ PR approved by at least one reviewer.");
+              console.log("✔ PR approved. Merge is allowed.");
             }

@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dev: ${{ steps.filter.outputs.dev }}
-      stage: ${{ steps.filter.outputs.stage }}
+      test: ${{ steps.filter.outputs.test }}
       prod: ${{ steps.filter.outputs.prod }}
       modules: ${{ steps.filter.outputs.modules }}
 
@@ -28,8 +28,8 @@ jobs:
           filters: |
             dev:
               - 'envs/dev/**'
-            stage:
-              - 'envs/stage/**'
+            test:
+              - 'envs/test/**'
             prod:
               - 'envs/prod/**'
             modules:
@@ -67,11 +67,20 @@ jobs:
 
       - name: Terraform Plan
         working-directory: envs/dev
-        run: terraform plan -var-file=dev.tfvars -input=false
+        run: terraform plan -var-file=dev.tfvars -no-color | tee plan.txt
 
-  plan-stage:
+      - name: Notify PR (DEV)
+        run: node scripts/terraform-notifier.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TF_ENV: dev
+          PLAN_PATH: envs/dev/plan.txt
+
+  plan-test:
     needs: detect-changes
-    if: needs.detect-changes.outputs.stage == 'true' || needs.detect-changes.outputs.modules == 'true'
+    if: needs.detect-changes.outputs.test == 'true' || needs.detect-changes.outputs.modules == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -80,7 +89,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGE }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_TEST }}
           aws-region: ap-northeast-2
 
       - name: Setup Terraform
@@ -92,16 +101,25 @@ jobs:
       #   run: terraform fmt -check -recursive
 
       - name: Terraform Init
-        working-directory: envs/stage
+        working-directory: envs/test
         run: terraform init -input=false
 
       - name: Terraform Validate
-        working-directory: envs/stage
+        working-directory: envs/test
         run: terraform validate
 
       - name: Terraform Plan
-        working-directory: envs/stage
-        run: terraform plan -var-file=stage.tfvars -input=false
+        working-directory: envs/test
+        run: terraform plan -var-file=test.tfvars -no-color | tee plan.txt
+
+      - name: Notify PR (TEST)
+        run: node scripts/terraform-notifier.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TF_ENV: test
+          PLAN_PATH: envs/test/plan.txt
 
   plan-prod:
     needs: detect-changes
@@ -135,4 +153,13 @@ jobs:
 
       - name: Terraform Plan
         working-directory: envs/prod
-        run: terraform plan -var-file=prod.tfvars -input=false
+        run: terraform plan -var-file=prod.tfvars -no-color | tee plan.txt
+
+      - name: Notify PR (PROD)
+        run: node scripts/terraform-notifier.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TF_ENV: prod
+          PLAN_PATH: envs/prod/plan.txt
