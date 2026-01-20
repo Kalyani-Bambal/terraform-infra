@@ -64,13 +64,13 @@ resource "aws_eks_access_policy_association" "github_actions_admin" {
 ################################
 # 🔐 EKS ACCESS – YOUR LOCAL USER
 ################################
-resource "aws_eks_access_entry" "ashu" {
+resource "aws_eks_access_entry" "kalyani" {
   cluster_name  = aws_eks_cluster.this.name
   principal_arn = "arn:aws:iam::358871393576:user/Kalyani-Bambal"
   type          = "STANDARD"
 }
 
-resource "aws_eks_access_policy_association" "ashu_admin" {
+resource "aws_eks_access_policy_association" "kalyani_admin" {
   cluster_name  = aws_eks_cluster.this.name
   principal_arn = "arn:aws:iam::358871393576:user/Kalyani-Bambal"
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
