@@ -34,16 +34,16 @@ module "eks" {
 }
 
 
-# module "bastion" {
-#   source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=main"
+module "bastion" {
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=main"
 
-#   env           = var.env
-#   vpc_id                = module.vpc.aws_vpc
-#   public_subnet_ids     = module.vpc.public_subnet_ids
+  env           = var.env
+  vpc_id                = module.vpc.aws_vpc
+  public_subnet_ids     = module.vpc.public_subnet_ids
 
-#   bastion_ami           = var.bastion_ami
-#   bastion_instance_type = var.bastion_instance_type
-#   bastion_key_name      = var.bastion_key_name
-#   allowed_ssh_cidrs = var.allowed_ssh_cidrs
-#   common_tags       = var.common_tags
-# }
+  bastion_ami           = var.bastion_ami
+  bastion_instance_type = var.bastion_instance_type
+  bastion_key_name      = var.bastion_key_name
+  allowed_ssh_cidrs = var.allowed_ssh_cidrs
+  common_tags       = var.common_tags
+}
