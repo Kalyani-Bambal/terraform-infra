@@ -19,7 +19,7 @@ allowed_cidr_blocks = ["10.10.0.0/16"]  # VPC CIDR (bastion included
 # bastion_ami = "ami-02b8269d5e85954ef"
 # bastion_instance_type = "t3.small"
 # bastion_key_name = "bastion-key"
-tags = {
+common_tags = {
   "Project"     = "TerraformInfra"
   "Environment" = "Development"
 }
