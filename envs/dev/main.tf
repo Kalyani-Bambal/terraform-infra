@@ -4,7 +4,7 @@ provider "aws" {
 
 module "vpc" {
 
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.8"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.9"
   env            = var.env
   cidr_block     = var.cidr_block
   tags           = var.tags
@@ -16,7 +16,7 @@ module "vpc" {
 
 module "eks" {
 
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.8"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.9"
   env             = var.env
   cluster_name    = "${var.env}-eks"
   cluster_version = var.cluster_version
@@ -36,14 +36,15 @@ module "eks" {
 
 module "bastion" {
 
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.8"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.9"
   env           = var.env
-  vpc_id                = module.vpc.aws_vpc
-  public_subnet_ids     = module.vpc.public_subnet_ids
+  # vpc_id                = module.vpc.aws_vpc
+  # public_subnet_ids     = module.vpc.public_subnet_ids
 
-  ami           = var.bastion_ami
-  instance_type = var.bastion_instance_type
-  key_name      = var.bastion_key_name
-  allowed_ssh_cidr = var.allowed_ssh_cidr
+  # ami           = var.bastion_ami
+  # instance_type = var.bastion_instance_type
+  # key_name      = var.bastion_key_name
+  # allowed_ssh_cidr = var.allowed_ssh_cidr
   tags       = var.tags
+  bastion_assume_role_principals = var.bastion_assume_role_principals
 }

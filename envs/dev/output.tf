@@ -26,6 +26,10 @@ output "public_subnet_ids" {
   value = module.vpc.public_subnet_ids
 }
 
-output "bastion_role_arn" {
-  value = module.bastion.role_arn
+# output "bastion_role_arn" {
+#   value = module.bastion.role_arn
+# }
+
+output "bastion_access_role_arn" {
+  value = module.bastion.bastion_access_role_arn
 }
