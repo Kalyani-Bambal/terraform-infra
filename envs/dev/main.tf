@@ -15,7 +15,7 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.41"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.4"
 
   env             = var.env
   cluster_name    = "${var.env}-eks"
