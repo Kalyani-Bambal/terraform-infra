@@ -29,7 +29,8 @@ module "eks" {
   node_instance_types = var.node_instance_types
 
   allowed_cidr_blocks = var.allowed_cidr_blocks
-  bastion_role_arn     = module.bastion.role_arn
+  # bastion_role_arn     = module.bastion.role_arn
+  bastion_access_role_arn = module.bastion.bastion_access_role_arn
   tags = var.tags
 }
 
