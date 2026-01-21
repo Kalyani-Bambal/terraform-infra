@@ -3,8 +3,8 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.6"
 
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.7"
   env            = var.env
   cidr_block     = var.cidr_block
   tags           = var.tags
@@ -15,8 +15,8 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.6"
 
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.7"
   env             = var.env
   cluster_name    = "${var.env}-eks"
   cluster_version = var.cluster_version
@@ -35,8 +35,8 @@ module "eks" {
 
 
 module "bastion" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.6"
 
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.7"
   env           = var.env
   vpc_id                = module.vpc.aws_vpc
   public_subnet_ids     = module.vpc.public_subnet_ids
