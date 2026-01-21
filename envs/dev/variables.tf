@@ -94,11 +94,11 @@ variable "public_subnet_ids" {
 #   type = string
 # }
 
-# variable "common_tags" {
-#   description = "Common tags for resources"
-#   type        = map(string)
-#   default     = {}
-# }
+variable "common_tags" {
+  description = "Common tags for resources"
+  type        = map(string)
+  default     = {}
+}
 
 # variable "bastion_instance_type" {
 #   description = "Instance type for bastion host"
