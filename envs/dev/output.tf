@@ -25,3 +25,7 @@ output "cluster_ca" {
 output "public_subnet_ids" {
   value = module.vpc.public_subnet_ids
 }
+
+output "bastion_role_arn" {
+  value = module.bastion.role_arn
+}
