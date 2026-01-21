@@ -84,28 +84,34 @@ variable "public_subnet_ids" {
   default     = []
 }
 
-variable "bastion_ami" {
-  description = "bastion_ami"
-  type = string
-}
+# variable "bastion_ami" {
+#   description = "bastion_ami"
+#   type = string
+# }
 
-variable "bastion_key_name" {
-  description = "Key pair name for bastion host"
-  type = string
-}
+# variable "bastion_key_name" {
+#   description = "Key pair name for bastion host"
+#   type = string
+# }
 
-variable "common_tags" {
-  description = "Common tags for resources"
-  type        = map(string)
-  default     = {}
-}
+# variable "common_tags" {
+#   description = "Common tags for resources"
+#   type        = map(string)
+#   default     = {}
+# }
 
-variable "bastion_instance_type" {
-  description = "Instance type for bastion host"
-  type = string
+# variable "bastion_instance_type" {
+#   description = "Instance type for bastion host"
+#   type = string
   
-}
+# }
 
-variable "allowed_ssh_cidr" {
-  type = list(string)
+# variable "allowed_ssh_cidr" {
+#   type = list(string)
+# }
+
+variable "bastion_assume_role_principals" {
+  description = "List of principals allowed to assume the bastion role"
+  type        = list(string)
+  default     = []
 }
