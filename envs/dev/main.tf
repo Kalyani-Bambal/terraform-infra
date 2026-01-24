@@ -3,7 +3,6 @@ provider "aws" {
 }
 
 module "vpc" {
-
   source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.13"
   env            = var.env
   cidr_block     = var.cidr_block
@@ -15,8 +14,7 @@ module "vpc" {
 }
 
 module "eks" {
-
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.13"
+ source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.13"
   env             = var.env
   cluster_name    = "${var.env}-eks"
   cluster_version = var.cluster_version
@@ -27,7 +25,6 @@ module "eks" {
   max_size            = var.max_size
   min_size            = var.min_size
   node_instance_types = var.node_instance_types
-
   allowed_cidr_blocks = var.allowed_cidr_blocks
   bastion_access_role_arn = module.bastion.bastion_access_role_arn
   tags = var.tags
@@ -35,7 +32,6 @@ module "eks" {
 
 
 module "bastion" {
-
   source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.13"
   env           = var.env
   tags       = var.tags
