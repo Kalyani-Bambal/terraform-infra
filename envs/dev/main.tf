@@ -42,8 +42,8 @@ module "bastion" {
   bastion_assume_role_principals = var.bastion_assume_role_principals
 }
 
-module "eks_addons" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.13"
+module "addons" {
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//addons?ref=v13.0.13"
 
   cluster_name       = module.eks.cluster_name
   cni_version        = var.cni_version
