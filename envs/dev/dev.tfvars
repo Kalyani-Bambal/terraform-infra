@@ -15,10 +15,6 @@ max_size            = 3
 min_size            = 1
 node_instance_types = ["t3.small"]
 allowed_cidr_blocks = ["10.10.0.0/16"]  # VPC CIDR (bastion included
-# allowed_ssh_cidr = ["0.0.0.0/0"]
-# bastion_ami = "ami-02b8269d5e85954ef"
-# bastion_instance_type = "t3.small"
-# bastion_key_name = "bastion-key"
 common_tags = {
   "Project"     = "TerraformInfra"
   "Environment" = "Development"
@@ -28,3 +24,7 @@ bastion_assume_role_principals = [
   "arn:aws:iam::358871393576:user/Ashutosh-Bambal",
   "arn:aws:iam::358871393576:user/Kalyani-Bambal"
 ]
+
+cni_version        = "v1.18.1-eksbuild.1"
+coredns_version    = "v1.11.1-eksbuild.4"
+kube_proxy_version = "v1.34.1-eksbuild.2"
