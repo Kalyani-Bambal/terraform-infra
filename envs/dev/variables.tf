@@ -100,18 +100,21 @@ variable "common_tags" {
   default     = {}
 }
 
-# variable "bastion_instance_type" {
-#   description = "Instance type for bastion host"
-#   type = string
-  
-# }
-
-# variable "allowed_ssh_cidr" {
-#   type = list(string)
-# }
-
 variable "bastion_assume_role_principals" {
   description = "List of principals allowed to assume the bastion role"
   type        = list(string)
   default     = []
 }
+
+variable "cni_version" {
+  type = string
+}
+
+variable "coredns_version" {
+  type = string
+}
+
+variable "kube_proxy_version" {
+  type = string
+}
+
