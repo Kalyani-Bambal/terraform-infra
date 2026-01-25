@@ -42,13 +42,13 @@ module "bastion" {
   bastion_assume_role_principals = var.bastion_assume_role_principals
 }
 
-# module "add-ons" {
-#   source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//add-ons?ref=v13.0.15"
+module "add-ons" {
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//add-ons?ref=v13.0.15"
 
-#   cluster_name       = module.eks.cluster_name
-#   cni_version        = var.cni_version
-#   coredns_version    = var.coredns_version
-#   kube_proxy_version = var.kube_proxy_version
-#   ebs_csi_driver_version   = var.ebs_csi_driver_version
-#   efs_csi_driver_version   = var.efs_csi_driver_version
-# }
+  cluster_name       = module.eks.cluster_name
+  cni_version        = var.cni_version
+  coredns_version    = var.coredns_version
+  kube_proxy_version = var.kube_proxy_version
+  # ebs_csi_driver_version   = var.ebs_csi_driver_version
+  # efs_csi_driver_version   = var.efs_csi_driver_version
+}
