@@ -50,5 +50,5 @@ module "add-ons" {
   coredns_version    = var.coredns_version
   kube_proxy_version = var.kube_proxy_version
   ebs_csi_driver_version   = var.ebs_csi_driver_version
-  efs_csi_driver   = var.efs_csi_driver
+  
 }

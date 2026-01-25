@@ -112,6 +112,3 @@ variable "ebs_csi_driver" {
   type = string
 }
 
-variable "efs_csi_driver_version" {
-  type = string
-}

@@ -29,4 +29,4 @@ cni_version        = "v1.18.1-eksbuild.1"
 coredns_version    = "v1.11.1-eksbuild.4"
 kube_proxy_version = "v1.34.1-eksbuild.2"
 ebs_csi_version   = "v1.24.0-eksbuild.1"
-efs_csi_version   = "v1.6.0-eksbuild.1"
+
