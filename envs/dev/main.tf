@@ -55,7 +55,7 @@ module "add-ons" {
 
 
 module "argocd" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//add-ons?ref=test5"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//argocd?ref=test5"
 
   cluster_name = module.eks.cluster_name
   values = [
