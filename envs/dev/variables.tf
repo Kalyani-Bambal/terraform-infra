@@ -108,7 +108,7 @@ variable "kube_proxy_version" {
   type = string
 }
 
-variable "ebs_csi_driver" {
+variable "ebs_csi_driver_version" {
   type = string
 }
 
