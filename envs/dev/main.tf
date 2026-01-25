@@ -1,6 +1,6 @@
-provider "aws" {
-  region = var.region
-}
+# provider "aws" {
+#   region = var.region
+# }
 
 module "vpc" {
 
@@ -52,3 +52,14 @@ module "add-ons" {
   # ebs_csi_driver_version   = var.ebs_csi_driver_version
   # efs_csi_driver_version   = var.efs_csi_driver_version
 }
+
+
+module "argocd" {
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//argocd?ref=test5"
+
+  cluster_name = module.eks.cluster_name
+  values = [
+    file("${path.module}/argocd-values.yaml")
+  ]
+}
+ 
