@@ -49,6 +49,6 @@ module "add-ons" {
   cni_version        = var.cni_version
   coredns_version    = var.coredns_version
   kube_proxy_version = var.kube_proxy_version
-  ebs_csi_version   = var.ebs_csi_version
-  efs_csi_version   = var.efs_csi_version
+  ebs_csi_driver_version   = var.ebs_csi_driver_version
+  efs_csi_driver_version   = var.efs_csi_driver_version
 }
