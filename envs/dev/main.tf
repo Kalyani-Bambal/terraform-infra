@@ -4,7 +4,7 @@ provider "aws" {
 
 module "vpc" {
 
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.15"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/vpc?ref=v13.0.16"
   env            = var.env
   cidr_block     = var.cidr_block
   tags           = var.tags
@@ -16,7 +16,7 @@ module "vpc" {
 
 module "eks" {
 
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.15"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules/eks?ref=v13.0.16"
   env             = var.env
   cluster_name    = "${var.env}-eks"
   cluster_version = var.cluster_version
@@ -36,14 +36,14 @@ module "eks" {
 
 module "bastion" {
 
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.15"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//bastion?ref=v13.0.16"
   env           = var.env
   tags       = var.tags
   bastion_assume_role_principals = var.bastion_assume_role_principals
 }
 
 module "add-ons" {
-  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//add-ons?ref=v13.0.15"
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//add-ons?ref=v13.0.16"
 
   cluster_name       = module.eks.cluster_name
   cni_version        = var.cni_version
