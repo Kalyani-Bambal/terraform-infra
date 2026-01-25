@@ -29,5 +29,6 @@ cni_version        = "v1.18.1-eksbuild.1"
 coredns_version    = "v1.11.1-eksbuild.4"
 kube_proxy_version = "v1.34.1-eksbuild.2"
 ebs_csi_driver_version = "v1.54.0-eksbuild.1"
+efs_csi_driver_version = "v2.2.0-eksbuild.1"
 
 
