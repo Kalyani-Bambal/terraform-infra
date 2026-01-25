@@ -10,7 +10,7 @@ region          = "ap-south-1"
 
 cluster_name        = "shared-cluster"
 cluster_version     = "1.34"
-desired_size        = 1
+desired_size        = 2
 max_size            = 3
 min_size            = 1
 node_instance_types = ["t3.small"]
