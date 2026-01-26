@@ -50,12 +50,12 @@ module "add-ons" {
 }
 
 
-# module "argocd" {
-#   source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//argocd?ref=v13.0.17"
+module "argocd" {
+  source = "git::https://github.com/Kalyani-Bambal/terraform-module.git//modules//argocd?ref=v13.0.17"
 
-#   cluster_name = module.eks.cluster_name
-#   values = [
-#     file("${path.module}/argocd-values.yaml")
-#   ]
-# }
+  cluster_name = module.eks.cluster_name
+  values = [
+    file("${path.module}/argocd-values.yaml")
+  ]
+}
  
