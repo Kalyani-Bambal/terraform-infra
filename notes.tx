@@ -1,0 +1,20 @@
+AWS_PROFILE=eks-bastion aws eks update-kubeconfig \
+  --region ap-south-1 \
+  --name dev-eks \
+  --alias eks-bastion
+
+you will get : Added new context eks-bastion to /home/ashu/.kube/config
+
+-----------------------------------------------------------------------------------------
+
+AWS_PROFILE=eks-bastion aws sts get-caller-identity
+
+you will get : {
+    "UserId": "AROAVHDTG4UUEUCJQTOB2:botocore-session-1770439755",
+    "Account": "358871393576",
+    "Arn": "arn:aws:sts::358871393576:assumed-role/dev-bastion-access-role/botocore-session-1770439755"
+}
+
+-----------------------------------------------------------------------------------------
+
+kubectl get nodes
